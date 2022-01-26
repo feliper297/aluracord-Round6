@@ -55,14 +55,14 @@ function Titulo(props) {
 //         <div>
 //             <GlobalStyle />
 //             <Titulo tag="h2">Boas vindas de volta!</Titulo>
-//           <h2>Discord - Round 6</h2>
+//             <h2>Discord - Alura Matrix</h2>
 //         </div>
 //     )
 // }
 // export default HomePage
 
 export default function PaginaInicial() {
-  const username = "player 456";
+  const username = "player456";
 
   return (
     <>
@@ -72,12 +72,12 @@ export default function PaginaInicial() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: appConfig.theme.colors.primary[500],
           backgroundImage:
-            "url(https://static1.purepeople.com.br/articles/9/32/79/99/@/3706380--round-6-e-sucesso-mundial-e-esta-prest-950x0-3.jpg)",
+            "url(https://assets.b9.com.br/wp-content/uploads/2021/10/Round6-themoviedb-1280x720.jpg)",
           backgroundRepeat: "no-repeat",
           backgroundSize: "cover",
           backgroundBlendMode: "multiply",
+          color: "white",
         }}
       >
         <Box
@@ -167,8 +167,10 @@ export default function PaginaInicial() {
               styleSheet={{
                 borderRadius: "50%",
                 marginBottom: "16px",
+                height: "140px",
+                width: "380px",
               }}
-              src={`https://github.com/${username}.png`}
+              src={`https://img.ibxk.com.br/2021/10/13/13143937537303.jpg?ims=704x`}
             />
             <Text
               variant="body4"
