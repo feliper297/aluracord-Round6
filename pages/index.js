@@ -62,7 +62,7 @@ function Titulo(props) {
 // export default HomePage
 
 export default function PaginaInicial() {
-  const username = "jogador 456";
+  const username = "feliper297";
 
   return (
     <>
@@ -122,7 +122,8 @@ export default function PaginaInicial() {
               {appConfig.name}
             </Text>
 
-            <TextField
+            <input type="text" value={username} />
+            {/* <TextField
               fullWidth
               textFieldColors={{
                 neutral: {
@@ -132,7 +133,7 @@ export default function PaginaInicial() {
                   backgroundColor: appConfig.theme.colors.neutrals[800],
                 },
               }}
-            />
+            /> */}
             <Button
               type="submit"
               label="Entrar"
@@ -167,10 +168,8 @@ export default function PaginaInicial() {
               styleSheet={{
                 borderRadius: "50%",
                 marginBottom: "16px",
-                height: "140px",
-                width: "380px",
               }}
-              src={`https://img.ibxk.com.br/2021/10/13/13143937537303.jpg?ims=704x`}
+              src={`https://github.com/feliper297.png`}
             />
             <Text
               variant="body4"
