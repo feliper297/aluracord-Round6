@@ -62,7 +62,7 @@ function Titulo(props) {
 // export default HomePage
 
 export default function PaginaInicial() {
-  const username = "player456";
+  const username = "jogador 456";
 
   return (
     <>
@@ -111,7 +111,7 @@ export default function PaginaInicial() {
               marginBottom: "32px",
             }}
           >
-            <Titulo tag="h2">Welcome back, player 456!</Titulo>
+            <Titulo tag="h2">Boas vindas de volta, jogador(a)</Titulo>
             <Text
               variant="body3"
               styleSheet={{
