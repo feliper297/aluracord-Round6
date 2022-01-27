@@ -5,12 +5,18 @@ import appConfig from "../config.json";
 export default function ChatPage() {
   const [mensagem, setMensagem] = React.useState("");
   const [listaDeMensagens, setListaDeMensagens] = React.useState([]);
-  // Usuário
+
   /*
-  - Usuários digita no campo textarea
-  - Aperta enter para enviar
-  - Tem que adicionar texto na listagem
-  */
+    // Usuário
+    - Usuário digita no campo textarea
+    - Aperta enter para enviar
+    - Tem que adicionar o texto na listagem
+    
+    // Dev
+    - [X] Campo criado
+    - [X] Vamos usar o onChange usa o useState (ter if pra caso seja enter pra limpar a variavel)
+    - [X] Lista de mensagens 
+    */
   function handleNovaMensagem(novaMensagem) {
     const mensagem = {
       id: listaDeMensagens.length + 1,
@@ -48,6 +54,7 @@ export default function ChatPage() {
           maxWidth: "95%",
           maxHeight: "95vh",
           padding: "32px",
+          border: "1px solid",
         }}
       >
         <Header />
@@ -61,11 +68,17 @@ export default function ChatPage() {
             flexDirection: "column",
             borderRadius: "5px",
             padding: "16px",
+            border: "1px solid",
           }}
         >
-          {/* <MessageList mensagens={[]} /> */}
-
           <MessageList mensagens={listaDeMensagens} />
+          {/* {listaDeMensagens.map((mensagemAtual) => {
+                        return (
+                            <li key={mensagemAtual.id}>
+                                {mensagemAtual.de}: {mensagemAtual.texto}
+                            </li>
+                        )
+                    })} */}
 
           <Box
             as="form"
@@ -97,7 +110,7 @@ export default function ChatPage() {
                 padding: "6px 8px",
                 backgroundColor: appConfig.theme.colors.neutrals[800],
                 marginRight: "12px",
-                color: appConfig.theme.colors.neutrals[200],
+                color: appConfig.theme.colors.neutrals[999],
               }}
             />
           </Box>
@@ -125,6 +138,12 @@ function Header() {
           colorVariant="neutral"
           label="Logout"
           href="/"
+          buttonColors={{
+            contrastColor: appConfig.theme.colors.neutrals["000"],
+            mainColor: appConfig.theme.colors.primary[500],
+            mainColorLight: appConfig.theme.colors.primary[400],
+            mainColorStrong: appConfig.theme.colors.primary[600],
+          }}
         />
       </Box>
     </>
