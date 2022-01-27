@@ -34,7 +34,7 @@ export default function ChatPage() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: "white",
+        backgroundColor: "gray",
         backgroundImage: `url(https://assets.b9.com.br/wp-content/uploads/2021/10/Round6-themoviedb-1280x720.jpg)`,
         backgroundRepeat: "no-repeat",
         backgroundSize: "cover",
