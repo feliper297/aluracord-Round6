@@ -73,19 +73,6 @@ export default function ChatPage() {
     setMensagem("");
   }
 
-  function handleDeletaMensagem(mensagemAtual) {
-    supabaseClient
-      .from("mensagens")
-      .delete()
-      .match({ id: mensagemAtual.id })
-      .then(({ data }) => {
-        const listaDeMensagensFiltrada = listaDeMensagens.filter((mensagem) => {
-          return mensagem.id != data[0].id;
-        });
-        setListaDeMensagens(listaDeMensagensFiltrada);
-      });
-  }
-
   return (
     <Box
       styleSheet={{
