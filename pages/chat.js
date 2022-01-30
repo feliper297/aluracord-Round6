@@ -313,7 +313,7 @@ function MessageList(props) {
                 href={`https://github.com/${mensagem.de}`}
                 target="_blank"
                 styleSheet={{
-                  color: appConfig.theme.colors.neutrals[200],
+                  color: appConfig.theme.colors.neutrals[900],
                   textDecoration: "none",
                   hover: {
                     color: appConfig.theme.colors.primary[500],
