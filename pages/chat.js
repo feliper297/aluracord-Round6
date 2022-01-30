@@ -323,7 +323,7 @@ function MessageList(props) {
               />
               <Text
                 tag="a"
-                href={`https://github.com/${mensagem.de}.png`}
+                href={`https://github.com/${mensagem.de}`}
                 target="_blank"
                 styleSheet={{
                   color: appConfig.theme.colors.neutrals[200],
