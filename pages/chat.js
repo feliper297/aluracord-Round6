@@ -10,24 +10,20 @@ const SUPABASE_ANON_KEY =
 const SUPABASE_URL = "https://qxmgammcsdfppsuktlcn.supabase.co";
 const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-function escutaMensagensEmTempoReal(adicionaMensagem){
+function escutaMensagensEmTempoReal(adicionaMensagem) {
   return supabaseClient
-  .from('mensagens')
-  .on('INSERT', (respostaLive) => {
-adicionaMensagem(respostaLive.new);
-  })
-  .subscribe();
+    .from("mensagens")
+    .on("INSERT", (respostaLive) => {
+      adicionaMensagem(respostaLive.new);
+    })
+    .subscribe();
 }
 
 export default function ChatPage() {
   const roteamento = useRouter();
   const usuarioLogado = roteamento.query.username;
-  console.log("roteamento.query", roteamento.query);
-  console.log("usuarioLogado", usuarioLogado);
   const [mensagem, setMensagem] = React.useState("");
-  const [listaDeMensagens, setListaDeMensagens] = React.useState([
-   
-  ]); 
+  const [listaDeMensagens, setListaDeMensagens] = React.useState([]);
 
   React.useEffect(() => {
     supabaseClient
@@ -39,45 +35,55 @@ export default function ChatPage() {
         setListaDeMensagens(data);
       });
 
-      const subscription = escutaMensagensEmTempoReal((novaMensagem) => {
-        console.log('Nova mensagem:', novaMensagem);
-        console.log('listaDeMensagens:', listaDeMensagens);
-        setListaDeMensagens((valorAtualDaLista) => {
-          console.log('valorAtualDaLista:', valorAtualDaLista);
-          return [
-            novaMensagem,
-            ...valorAtualDaLista ,
-          ]
-        }
-        );
+    const subscription = escutaMensagensEmTempoReal((novaMensagem) => {
+      setListaDeMensagens((valorAtualDaLista) => {
+        return [novaMensagem, ...valorAtualDaLista];
+      });
     });
-    
     return () => {
       subscription.unsubscribe();
-    }
-
+    };
   }, []);
+
+  function validaMensagem(mensagemParaValidar) {
+    console.log("Texte de validação:", mensagemParaValidar.length);
+    if (mensagemParaValidar.length === 0) {
+      return false;
+    } else if (!mensagemParaValidar.trim()) {
+      return false;
+    } else {
+      return true;
+    }
+  }
 
   function handleNovaMensagem(novaMensagem) {
     const mensagem = {
-      //id: listaDeMensagens.length + 1,
-      de: 'feliper297',
-      de: usuarioLogado,
+      id: listaDeMensagens.length + 1,
+      de: `${usuarioLogado}`,
       texto: novaMensagem,
     };
 
-  }
     supabaseClient
       .from("mensagens")
       .insert([mensagem])
       .then(({ data }) => {
         console.log("Criando mensagem: ", data);
-        setListaDeMensagens([
-          data[0],
-          ...listaDeMensagens,
-        ]);
       });
+
     setMensagem("");
+  }
+
+  function handleDeletaMensagem(mensagemAtual) {
+    supabaseClient
+      .from("mensagens")
+      .delete()
+      .match({ id: mensagemAtual.id })
+      .then(({ data }) => {
+        const listaDeMensagensFiltrada = listaDeMensagens.filter((mensagem) => {
+          return mensagem.id != data[0].id;
+        });
+        setListaDeMensagens(listaDeMensagensFiltrada);
+      });
   }
 
   return (
@@ -109,7 +115,7 @@ export default function ChatPage() {
           border: "1px solid",
         }}
       >
-        <Header />
+        <Header value={usuarioLogado} />
         <Box
           styleSheet={{
             position: "relative",
@@ -167,20 +173,57 @@ export default function ChatPage() {
             />
             {/*CallBack*/}
             <ButtonSendSticker
-             onStickerClick={(sticker) => {
-               //console.log('[USANDO O COMPONENTE] Salva esse sticker no banco', sticker);
-               handleNovaMensagem(':sticker: ' + sticker);
-             }
-             }
-             />
+              onStickerClick={(sticker) => {
+                //console.log('[USANDO O COMPONENTE] Salva esse sticker no banco', sticker);
+                handleNovaMensagem(`:sticker: ${sticker}`);
+              }}
+            />
+            <Button
+              colorVariant="positive"
+              iconName="arrowRight"
+              buttonColors={{
+                contrastColor: appConfig.theme.colors.neutrals["000"],
+                mainColor: appConfig.theme.colors.primary[500],
+                mainColorLight: appConfig.theme.colors.primary[400],
+                mainColorStrong: appConfig.theme.colors.primary[600],
+              }}
+              // label=""
+              onClick={(event) => {
+                if (validaMensagem(mensagem)) {
+                  if (event.target) {
+                    handleNovaMensagem(mensagem);
+                  }
+                }
+              }}
+              styleSheet={{
+                borderRadius: "50%",
+                padding: "0 3px 0 0",
+                minWidth: "50px",
+                minHeight: "50px",
+                fontSize: "20px",
+                marginBottom: "8px",
+                marginLeft: "8px",
+                lineHeight: "0",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: appConfig.theme.colors.neutrals[800],
+                filter: React.onMouseOver ? "grayscale(0)" : "grayscale(0)",
+                hover: {
+                  filter: "grayscale(0)",
+                },
+              }}
+            />
           </Box>
         </Box>
       </Box>
     </Box>
   );
+}
 
-
-function Header() {
+function Header(logado) {
+  const user = logado.value;
+  console.log(`testa ${user}:`);
   return (
     <>
       <Box
@@ -192,7 +235,29 @@ function Header() {
           justifyContent: "space-between",
         }}
       >
-        <Text variant="heading5">Chat</Text>
+        <Box
+          styleSheet={{
+            width: "100%",
+            marginBottom: "16px",
+            display: "inline-block",
+            alignItems: "center",
+            justifyContent: "left",
+          }}
+        >
+          <Image
+            styleSheet={{
+              width: "50px",
+              height: "50px",
+              borderRadius: "50%",
+              display: "flex",
+              marginRight: "8px",
+              alignItems: "left",
+            }}
+            src={`https://github.com/${user}.png`}
+          />
+          <Text variant="heading5">{user}</Text>
+        </Box>
+
         <Button
           variant="tertiary"
           colorVariant="neutral"
@@ -211,16 +276,19 @@ function Header() {
 }
 
 function MessageList(props) {
-  console.log(props);
+  console.log("MessageList", props);
+
+  const handleDeletaMensagem = props.handleDeletaMensagem;
   return (
     <Box
       tag="ul"
       styleSheet={{
-        overflow: "scroll",
+        overflow: "auto",
+        overflowX: "hidden",
         display: "flex",
         flexDirection: "column-reverse",
         flex: 1,
-        color: appConfig.theme.colors.neutrals["000"],
+        // color: appConfig.theme.colors.neutrals["000"],
         marginBottom: "16px",
       }}
     >
@@ -253,7 +321,20 @@ function MessageList(props) {
                 }}
                 src={`https://github.com/${mensagem.de}.png`}
               />
-              <Text tag="strong">{mensagem.de}</Text>
+              <Text
+                tag="a"
+                href={`https://github.com/${mensagem.de}.png`}
+                target="_blank"
+                styleSheet={{
+                  color: appConfig.theme.colors.neutrals[200],
+                  textDecoration: "none",
+                  hover: {
+                    color: appConfig.theme.colors.primary[500],
+                  },
+                }}
+              >
+                {mensagem.de}
+              </Text>
               <Text
                 styleSheet={{
                   fontSize: "10px",
@@ -262,24 +343,26 @@ function MessageList(props) {
                 }}
                 tag="span"
               >
-                {(new Date().toLocaleDateString())}
+                {new Date().toLocaleString("pt-BR", {
+                  dateStyle: "short",
+                  timeStyle: "short",
+                })}
               </Text>
             </Box>
-            {mensagem.texto}
-            {/* [Declarativo] */}
-            {/* Condicional: {mensagem.texto.startsWith(':sticker:').toString()} */}
-            {mensagem.texto.startsWith(':sticker:')
-              ? (
-                <Image src={mensagem.texto.replace(':sticker:', '')} />
-              )
-              : (
-                mensagem.texto
-              )}
-            {/* if mensagem de texto possui stickers:
-                           mostra a imagem
-                        else 
-                           mensagem.texto */}
-            {/* {mensagem.texto} */}
+            {/*[Declarativo}*/}
+            {mensagem.texto.startsWith(":sticker:") ? (
+              <Image
+                src={mensagem.texto.replace(":sticker:", " ")}
+                styleSheet={{
+                  height: "150px",
+                }}
+              />
+            ) : (
+              mensagem.texto
+            )}
           </Text>
         );
       })}
+    </Box>
+  );
+}
