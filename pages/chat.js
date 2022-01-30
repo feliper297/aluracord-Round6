@@ -2,15 +2,32 @@ import { Box, Text, TextField, Image, Button } from "@skynexui/components";
 import { createClient } from "@supabase/supabase-js";
 import React from "react";
 import appConfig from "../config.json";
+import { useRouter } from "next/router";
+import { ButtonSendSticker } from "../src/components/ButtonSendSticker";
 
 const SUPABASE_ANON_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzM5Mzc0MSwiZXhwIjoxOTU4OTY5NzQxfQ.O2PGwqdzOjvpaBvQ062zSWJApO6vY3ogZ4MYhP1WvBk";
 const SUPABASE_URL = "https://qxmgammcsdfppsuktlcn.supabase.co";
 const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+function escutaMensagensEmTempoReal(adicionaMensagem){
+  return supabaseClient
+  .from('mensagens')
+  .on('INSERT', (respostaLive) => {
+adicionaMensagem(respostaLive.new);
+  })
+  .subscribe();
+}
+
 export default function ChatPage() {
+  const roteamento = useRouter();
+  const usuarioLogado = roteamento.query.username;
+  console.log("roteamento.query", roteamento.query);
+  console.log("usuarioLogado", usuarioLogado);
   const [mensagem, setMensagem] = React.useState("");
-  const [listaDeMensagens, setListaDeMensagens] = React.useState([]);
+  const [listaDeMensagens, setListaDeMensagens] = React.useState([
+   
+  ]); 
 
   React.useEffect(() => {
     supabaseClient
@@ -21,34 +38,45 @@ export default function ChatPage() {
         console.log("Dados da consulta:", data);
         setListaDeMensagens(data);
       });
+
+      const subscription = escutaMensagensEmTempoReal((novaMensagem) => {
+        console.log('Nova mensagem:', novaMensagem);
+        console.log('listaDeMensagens:', listaDeMensagens);
+        setListaDeMensagens((valorAtualDaLista) => {
+          console.log('valorAtualDaLista:', valorAtualDaLista);
+          return [
+            novaMensagem,
+            ...valorAtualDaLista ,
+          ]
+        }
+        );
+    });
+    
+    return () => {
+      subscription.unsubscribe();
+    }
+
   }, []);
 
-  /*
-    // Usuário
-    - Usuário digita no campo textarea
-    - Aperta enter para enviar
-    - Tem que adicionar o texto na listagem
-    
-    // Dev
-    - [X] Campo criado
-    - [X] Vamos usar o onChange usa o useState (ter if pra caso seja enter pra limpar a variavel)
-    - [X] Lista de mensagens 
-    */
   function handleNovaMensagem(novaMensagem) {
     const mensagem = {
       //id: listaDeMensagens.length + 1,
-      de: "feliper297",
+      de: 'feliper297',
+      de: usuarioLogado,
       texto: novaMensagem,
     };
 
+  }
     supabaseClient
       .from("mensagens")
       .insert([mensagem])
       .then(({ data }) => {
         console.log("Criando mensagem: ", data);
-        setListaDeMensagens([data[0], ...listaDeMensagens]);
+        setListaDeMensagens([
+          data[0],
+          ...listaDeMensagens,
+        ]);
       });
-
     setMensagem("");
   }
 
@@ -137,12 +165,20 @@ export default function ChatPage() {
                 color: appConfig.theme.colors.neutrals[999],
               }}
             />
+            {/*CallBack*/}
+            <ButtonSendSticker
+             onStickerClick={(sticker) => {
+               //console.log('[USANDO O COMPONENTE] Salva esse sticker no banco', sticker);
+               handleNovaMensagem(':sticker: ' + sticker);
+             }
+             }
+             />
           </Box>
         </Box>
       </Box>
     </Box>
   );
-}
+
 
 function Header() {
   return (
@@ -226,13 +262,24 @@ function MessageList(props) {
                 }}
                 tag="span"
               >
-                {new Date().toLocaleDateString()}
+                {(new Date().toLocaleDateString())}
               </Text>
             </Box>
             {mensagem.texto}
+            {/* [Declarativo] */}
+            {/* Condicional: {mensagem.texto.startsWith(':sticker:').toString()} */}
+            {mensagem.texto.startsWith(':sticker:')
+              ? (
+                <Image src={mensagem.texto.replace(':sticker:', '')} />
+              )
+              : (
+                mensagem.texto
+              )}
+            {/* if mensagem de texto possui stickers:
+                           mostra a imagem
+                        else 
+                           mensagem.texto */}
+            {/* {mensagem.texto} */}
           </Text>
         );
       })}
-    </Box>
-  );
-}
