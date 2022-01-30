@@ -343,10 +343,7 @@ function MessageList(props) {
                 }}
                 tag="span"
               >
-                {new Date().toLocaleString("pt-BR", {
-                  dateStyle: "short",
-                  timeStyle: "short",
-                })}
+                {new Date().toLocaleDateString()}
               </Text>
             </Box>
             {/*[Declarativo}*/}
